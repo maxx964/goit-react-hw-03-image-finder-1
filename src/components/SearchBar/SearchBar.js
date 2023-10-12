@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-
 import styles from './SearchBar.module.css';
 import { MdImageSearch } from 'react-icons/md';
-
 
 class SearchBar extends Component {
   state = {
@@ -23,7 +21,7 @@ class SearchBar extends Component {
       <header className={styles.searchbar}>
         <form className={styles.form} onSubmit={this.handleSubmit}>
           <button type="submit" className={styles.button}>
-             <MdImageSearch size={30}/>
+            <MdImageSearch size={30} />
           </button>
 
           <input
