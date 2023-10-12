@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
+
 import SearchBar from './SearchBar/SearchBar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Loader from './Loader/Loader';
 import Button from './Button/Button';
 import Modal from './Modal/Modal';
 import styles from './App.module.css';
-
-
-
 class App extends Component {
   state = {
     images: [],

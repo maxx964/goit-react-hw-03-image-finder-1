@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
+
 import styles from './SearchBar.module.css';
 import { MdImageSearch } from 'react-icons/md';
-
 class SearchBar extends Component {
   state = {
     query: '',

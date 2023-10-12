@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styles from './Modal.module.css';
-
 class Modal extends Component {
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyPress);
