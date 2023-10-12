@@ -6,7 +6,7 @@ import Button from './Button/Button';
 import Modal from './Modal/Modal';
 import styles from './App.module.css';
 
-const apiKey = '39358153-a46635e1a9ac8a2573ff17e3b';
+
 
 class App extends Component {
   state = {
