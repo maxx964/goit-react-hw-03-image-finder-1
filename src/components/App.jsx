@@ -6,6 +6,7 @@ import Loader from './Loader/Loader';
 import Button from './Button/Button';
 import Modal from './Modal/Modal';
 import styles from './App.module.css';
+
 class App extends Component {
   state = {
     images: [],
@@ -13,11 +14,11 @@ class App extends Component {
     largeImageURL: '',
     query: '',
     page: 1,
+    totalImagesCount: 0, 
   };
 
   componentDidMount() {
-   
-    this.loadImages('initialQuery', 1); 
+    this.loadImages('initialQuery', 1);
   }
 
   handleImageSearch = async (query) => {
@@ -26,6 +27,7 @@ class App extends Component {
       isLoading: true,
       query,
       page: 1,
+      totalImagesCount: 0,
     });
 
     this.loadImages(query, 1);
@@ -56,10 +58,11 @@ class App extends Component {
 
       const data = await response.json();
       const newImages = data.hits;
-
+      const { totalHits } = data;
       this.setState((prevState) => ({
         images: [...prevState.images, ...newImages],
         isLoading: false,
+        totalImagesCount: totalHits, 
       }));
     } catch (error) {
       console.error(error);
@@ -76,14 +79,16 @@ class App extends Component {
   };
 
   render() {
-    const { images, isLoading, largeImageURL } = this.state;
+    const { images, isLoading, largeImageURL, totalImagesCount } = this.state;
 
     return (
       <div className={styles.App}>
         <SearchBar onSubmit={this.handleImageSearch} />
         <ImageGallery images={images} onImageClick={this.openModal} />
         {isLoading && <Loader />}
-        {images.length > 0 && <Button onClick={this.loadMoreImages} />}
+        {images.length > 0 && images.length < totalImagesCount && (
+          <Button onClick={this.loadMoreImages} shouldShow={true} />
+        )}
         {largeImageURL && (
           <Modal largeImageURL={largeImageURL} alt="Large Image" onClose={this.closeModal} />
         )}
