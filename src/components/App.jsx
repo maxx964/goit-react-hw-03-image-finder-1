@@ -18,6 +18,7 @@ class App extends Component {
     totalImagesCount: 0,
   };
 
+ 
   handleImageSearch = async (query) => {
     this.setState({
       images: [],
@@ -26,8 +27,9 @@ class App extends Component {
       totalImagesCount: 0,
     });
 
-   try {
+    try {
       this.setState({ isLoading: true });
+
       const { images, totalImagesCount } = await loadImages(query, 1);
       this.setState({
         images: images,
@@ -43,18 +45,19 @@ class App extends Component {
   loadMoreImages = async () => {
     const { query, page } = this.state;
     this.setState({
-      isLoading: true,
       page: page + 1,
     });
 
-     try {
+    try {
       this.setState({ isLoading: true });
+
       const { images } = await loadImages(query, page + 1);
       this.setState((prevState) => ({
         images: [...prevState.images, ...images],
       }));
     } catch (error) {
       console.error(error);
+    } finally {
       this.setState({ isLoading: false });
     }
   };
