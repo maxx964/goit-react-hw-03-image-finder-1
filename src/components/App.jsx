@@ -8,6 +8,7 @@ import Modal from './Modal/Modal';
 import { loadImages } from './api/api';
 
 import styles from './App.module.css';
+
 class App extends Component {
   state = {
     images: [],
