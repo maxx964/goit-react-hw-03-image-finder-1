@@ -5,8 +5,9 @@ import ImageGallery from './ImageGallery/ImageGallery';
 import Loader from './Loader/Loader';
 import Button from './Button/Button';
 import Modal from './Modal/Modal';
-import styles from './App.module.css';
+import { loadImages } from './api/api';
 
+import styles from './App.module.css';
 class App extends Component {
   state = {
     images: [],
@@ -14,55 +15,43 @@ class App extends Component {
     largeImageURL: '',
     query: '',
     page: 1,
-    totalImagesCount: 0, 
+    totalImagesCount: 0,
   };
-
-  componentDidMount() {
-    this.loadImages('initialQuery', 1);
-  }
 
   handleImageSearch = async (query) => {
     this.setState({
       images: [],
-      isLoading: true,
       query,
       page: 1,
       totalImagesCount: 0,
     });
 
-    this.loadImages(query, 1);
+   try {
+      this.setState({ isLoading: true });
+      const { images, totalImagesCount } = await loadImages(query, 1);
+      this.setState({
+        images: images,
+        totalImagesCount,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.setState({ isLoading: false });
+    }
   };
 
-  loadMoreImages = () => {
+  loadMoreImages = async () => {
     const { query, page } = this.state;
-    this.setState(
-      {
-        isLoading: true,
-        page: page + 1,
-      },
-      () => {
-        this.loadImages(query, page + 1);
-      }
-    );
-  };
+    this.setState({
+      isLoading: true,
+      page: page + 1,
+    });
 
-  loadImages = async (query, page) => {
-    const apiKey = '39358153-a46635e1a9ac8a2573ff17e3b';
-    const apiUrl = `https://pixabay.com/api/?q=${query}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`;
-
-    try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
-        throw new Error('Something went wrong');
-      }
-
-      const data = await response.json();
-      const newImages = data.hits;
-      const { totalHits } = data;
+     try {
+      this.setState({ isLoading: true });
+      const { images } = await loadImages(query, page + 1);
       this.setState((prevState) => ({
-        images: [...prevState.images, ...newImages],
-        isLoading: false,
-        totalImagesCount: totalHits, 
+        images: [...prevState.images, ...images],
       }));
     } catch (error) {
       console.error(error);
@@ -86,9 +75,8 @@ class App extends Component {
         <SearchBar onSubmit={this.handleImageSearch} />
         <ImageGallery images={images} onImageClick={this.openModal} />
         {isLoading && <Loader />}
-        {images.length > 0 && images.length < totalImagesCount && (
-          <Button onClick={this.loadMoreImages} shouldShow={true} />
-        )}
+        {images.length < totalImagesCount && (
+        <Button onClick={this.loadMoreImages} shouldShow={true} />)}
         {largeImageURL && (
           <Modal largeImageURL={largeImageURL} alt="Large Image" onClose={this.closeModal} />
         )}
