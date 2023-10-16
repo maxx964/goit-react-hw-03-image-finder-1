@@ -29,7 +29,6 @@ class App extends Component {
 
     try {
       this.setState({ isLoading: true });
-
       const { images, totalImagesCount } = await loadImages(query, 1);
       this.setState({
         images: images,
@@ -43,9 +42,8 @@ class App extends Component {
   };
 
   loadMoreImages = async () => {
-  const { query, page } = this.state;
-  
-  try {
+    const { query, page } = this.state;
+    try {
     const { images } = await loadImages(query, page + 1);
     this.setState((prevState) => ({
       images: [...prevState.images, ...images],
