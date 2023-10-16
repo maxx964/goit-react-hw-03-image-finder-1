@@ -19,7 +19,6 @@ class App extends Component {
     totalImagesCount: 0,
   };
 
- 
   handleImageSearch = async (query) => {
     this.setState({
       images: [],
