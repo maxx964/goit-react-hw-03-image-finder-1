@@ -44,24 +44,18 @@ class App extends Component {
   };
 
   loadMoreImages = async () => {
-    const { query, page } = this.state;
-    this.setState({
-      page: page + 1,
-    });
-
-    try {
-      this.setState({ isLoading: true });
-
-      const { images } = await loadImages(query, page + 1);
-      this.setState((prevState) => ({
-        images: [...prevState.images, ...images],
-      }));
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.setState({ isLoading: false });
-    }
-  };
+  const { query, page } = this.state;
+  
+  try {
+    const { images } = await loadImages(query, page + 1);
+    this.setState((prevState) => ({
+      images: [...prevState.images, ...images],
+      page: prevState.page + 1, 
+    }));
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   openModal = (largeImageURL) => {
     this.setState({ largeImageURL });
