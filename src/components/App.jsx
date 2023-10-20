@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import SearchBar from './SearchBar/SearchBar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Loader from './Loader/Loader';
@@ -10,68 +9,64 @@ import { loadImages } from './api/api';
 import styles from './App.module.css';
 
 class App extends Component {
-  state = {
-    images: [],
-    isLoading: false,
-    largeImageURL: '',
-    query: '',
-    page: 1,
-    totalImagesCount: 0,
-  };
-
-  handleImageSearch = async (query) => {
-    this.setState({
+  constructor(props) {
+    super(props);
+    this.state = {
+      query: '',
       images: [],
-      query,
       page: 1,
-      totalImagesCount: 0,
-    });
+      isLoading: false,
+      loadMore: false,
+      largeImageURL: '',
+    };
+  }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
+      this.fetchImages(this.state.query, this.state.page);
+    }
+  }
+
+  fetchImages = async (query, page) => {
     try {
       this.setState({ isLoading: true });
-      const { images, totalImagesCount } = await loadImages(query, 1);
-      this.setState({
-        images: images,
-        totalImagesCount,
-      });
+      const { images, totalImagesCount } = await loadImages(query, page);
+      this.setState((prev) => ({
+        images: [...prev.images, ...images],
+        loadMore: prev.page < Math.ceil(totalImagesCount / 12),
+        isLoading: false,
+      }));
     } catch (error) {
-      console.error(error);
-    } finally {
+      console.error('Error fetching data:', error);
       this.setState({ isLoading: false });
     }
-  };
-
-  loadMoreImages = async () => {
-    const { query, page } = this.state;
-    try {
-    const { images } = await loadImages(query, page + 1);
-    this.setState((prevState) => ({
-      images: [...prevState.images, ...images],
-      page: prevState.page + 1, 
-    }));
-  } catch (error) {
-    console.error(error);
   }
-};
 
-  openModal = (largeImageURL) => {
+  handleImageSearch = (query) => {
+    this.setState({ query, page: 1, images: [] });
+  }
+
+  loadMoreImages = () => {
+    this.setState((prev) => ({ page: prev.page + 1 }));
+  }
+
+  handleImageClick = (largeImageURL) => {
     this.setState({ largeImageURL });
-  };
+  }
 
   closeModal = () => {
     this.setState({ largeImageURL: '' });
-  };
+  }
 
   render() {
-    const { images, isLoading, largeImageURL, totalImagesCount } = this.state;
+    const { images, isLoading, loadMore, largeImageURL } = this.state;
 
     return (
       <div className={styles.App}>
         <SearchBar onSubmit={this.handleImageSearch} />
-        <ImageGallery images={images} onImageClick={this.openModal} />
-        {isLoading && <Loader />}
-        {images.length < totalImagesCount && (
-        <Button onClick={this.loadMoreImages} shouldShow={true} />)}
+        <ImageGallery images={images} onImageClick={this.handleImageClick} />
+        {isLoading && images.length === 0 && <Loader />}
+        {loadMore && <Button onClick={this.loadMoreImages} shouldShow={true} />}
         {largeImageURL && (
           <Modal largeImageURL={largeImageURL} alt="Large Image" onClose={this.closeModal} />
         )}
