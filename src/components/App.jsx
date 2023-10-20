@@ -23,11 +23,11 @@ class App extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
-      this.fetchImages(this.state.query, this.state.page);
+      this.getImages(this.state.query, this.state.page);
     }
   }
 
-  fetchImages = async (query, page) => {
+  getImages = async (query, page) => {
     try {
       this.setState({ isLoading: true });
       const { images, totalImagesCount } = await loadImages(query, page);
@@ -50,7 +50,7 @@ class App extends Component {
     this.setState((prev) => ({ page: prev.page + 1 }));
   }
 
-  handleImageClick = (largeImageURL) => {
+  openModal = (largeImageURL) => {
     this.setState({ largeImageURL });
   }
 
@@ -64,7 +64,7 @@ class App extends Component {
     return (
       <div className={styles.App}>
         <SearchBar onSubmit={this.handleImageSearch} />
-        <ImageGallery images={images} onImageClick={this.handleImageClick} />
+        <ImageGallery images={images} onImageClick={this.openModal} />
         {isLoading && images.length === 0 && <Loader />}
         {loadMore && <Button onClick={this.loadMoreImages} shouldShow={true} />}
         {largeImageURL && (
