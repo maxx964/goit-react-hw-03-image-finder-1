@@ -62,15 +62,7 @@ class App extends Component {
     const { images, isLoading, loadMore, largeImageURL } = this.state;
 
     return (
-      <div className={styles.App}>
-        <SearchBar onSubmit={this.handleImageSearch} />
-        <ImageGallery images={images} onImageClick={this.openModal} />
-        {isLoading && images.length === 0 && <Loader />}
-        {loadMore && <Button onClick={this.loadMoreImages} shouldShow={true} />}
-        {largeImageURL && (
-          <Modal largeImageURL={largeImageURL} alt="Large Image" onClose={this.closeModal} />
-        )}
-      </div>
+     
     );
   }
 }
